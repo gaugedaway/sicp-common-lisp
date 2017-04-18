@@ -1,8 +1,16 @@
 (defun sqr (x) (* x x))
 
 (defun expmod (a n m)
-  (defun tail-expmod (n acc)
-    (cond ((= n 0) acc)
-          ((evenp n) (tail-expmod (/ n 2) (mod (sqr acc) m)))
-          (t (tail-expmod (- n 1) (mod (* acc a) m)))))
-  (tail-expmod n 1))
+  (cond ((= n 0) 1)
+        ((evenp n) (mod (sqr (expmod a (/ n 2) m)) m))
+        (t (mod (* a (expmod a (- n 1) m)) m))))
+
+(defun fermat-test (n)
+  (defun try-it (a)
+    (= (expmod a n n) a))
+  (try-it (+ 1 (random (- n 1)))))
+
+(defun fast-prime? (n times)
+  (cond ((= times 0) t)
+        ((fermat-test n) (fast-prime? n (- times 1)))
+        (t nil)))
